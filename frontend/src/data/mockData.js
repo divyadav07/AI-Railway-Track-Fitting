@@ -71,9 +71,9 @@ export const HEALTH_SCORE_BREAKDOWN = {
 };
 
 export const DETECTED_DEFECT_PRESETS = [
-  { label: "Rust", confidence: 0.92, color: "#f59e0b" },
-  { label: "Crack", confidence: 0.88, color: "#ef4444" },
-  { label: "Missing Bolt", confidence: 0.9, color: "#22c55e" },
+  { label: "Rust", confidence: 0.92, color: "#E9B23F" },
+  { label: "Crack", confidence: 0.88, color: "#E2643C" },
+  { label: "Missing Bolt", confidence: 0.9, color: "#2EE6A8" },
 ];
 
 export const PREDICTIVE_MAINTENANCE = {
@@ -119,9 +119,9 @@ export const MOCK_ALERTS = [
 ];
 
 export const HEALTH_STATUS_DISTRIBUTION = [
-  { label: "Healthy", value: 69, color: "#22c55e" },
-  { label: "Needs Inspection", value: 24, color: "#f59e0b" },
-  { label: "Critical", value: 7, color: "#ef4444" },
+  { label: "Healthy", value: 69, color: "#2EE6A8" },
+  { label: "Needs Inspection", value: 24, color: "#E9B23F" },
+  { label: "Critical", value: 7, color: "#E2643C" },
 ];
 
 export const INSPECTION_TREND = [10, 12, 8, 15, 11, 18, 16].map((v, i) => ({
@@ -148,11 +148,11 @@ export const MOCK_INSPECTION_TREND_6M = [
 ];
 
 export const MOCK_TRACK_SECTIONS = [
-  { label: "Station A - Station B", value: 35, color: "#3b82f6" },
-  { label: "Station B - Station C", value: 25, color: "#22c55e" },
-  { label: "Station C - Station D", value: 20, color: "#f59e0b" },
-  { label: "Station D - Station E", value: 12, color: "#ef4444" },
-  { label: "Others", value: 8, color: "#94a3b8" },
+  { label: "Station A - Station B", value: 35, color: "#14B385" },
+  { label: "Station B - Station C", value: 25, color: "#2EE6A8" },
+  { label: "Station C - Station D", value: 20, color: "#E9B23F" },
+  { label: "Station D - Station E", value: 12, color: "#E2643C" },
+  { label: "Others", value: 8, color: "#9FB3AC" },
 ];
 
 export const MOCK_TRACK_MAP = {

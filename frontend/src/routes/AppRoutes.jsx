@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import Landing from "../pages/Landing";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Dashboard from "../pages/Dashboard";
@@ -10,12 +11,12 @@ import Users from "../pages/Users";
 import Settings from "../pages/Settings";
 import ProtectedRoute from "./ProtectedRoute";
 
-// Route table. "/" goes to login; /login and /signup are public; every other page
+// Route table. "/" is the public landing page; /login and /signup are public; every other page
 // is wrapped in <ProtectedRoute> so it needs a logged-in user. Unknown URLs go to login.
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route

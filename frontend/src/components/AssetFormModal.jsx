@@ -64,14 +64,14 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
     <Modal title={isEdit ? "Edit Asset" : "Add New Asset"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700">
+          <div className="rounded-lg border border-rust-200 dark:border-rust-500/30 bg-rust-50 dark:bg-rust-500/10 px-3 py-2 text-[13px] text-rust-700 dark:text-rust-300">
             {error}
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">
+            <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">
               Fitting Type
             </span>
             <input
@@ -81,7 +81,7 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
               onChange={handleChange}
               required
               placeholder="e.g. Rail Clip"
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[14px] text-slate-800 dark:text-slate-100 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[14px] text-ink-800 dark:text-ink-100 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
             />
             <datalist id="fitting-type-options">
               {FITTING_TYPE_OPTIONS.map((t) => (
@@ -91,7 +91,7 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">
+            <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">
               Track Number
             </span>
             <input
@@ -100,26 +100,26 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
               onChange={handleChange}
               required
               placeholder="e.g. TRK-104"
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[14px] text-slate-800 dark:text-slate-100 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[14px] text-ink-800 dark:text-ink-100 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
             />
           </label>
         </div>
 
         <label className="block">
-          <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">Location</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">Location</span>
           <input
             name="Location"
             value={form.Location}
             onChange={handleChange}
             required
             placeholder="e.g. Km 42+300, Nagpur Section"
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[14px] text-slate-800 dark:text-slate-100 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[14px] text-ink-800 dark:text-ink-100 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
           />
         </label>
 
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">
+            <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">
               Installation Date
             </span>
             <input
@@ -128,18 +128,18 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
               value={form.InstallationDate}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[14px] text-slate-800 dark:text-slate-100 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[14px] text-ink-800 dark:text-ink-100 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
             />
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">Status</span>
+            <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">Status</span>
             <select
               name="Status"
               value={form.Status}
               onChange={handleChange}
               required
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[14px] text-slate-700 dark:text-slate-200 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[14px] text-ink-700 dark:text-ink-200 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
             >
               {/* Keep an existing legacy status selectable so editing an old
                   asset doesn't silently show a different value. */}
@@ -153,9 +153,9 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
         </div>
 
         <label className="block">
-          <span className="mb-1.5 flex items-center justify-between text-[13px] font-medium text-slate-700 dark:text-slate-200">
+          <span className="mb-1.5 flex items-center justify-between text-[13px] font-medium text-ink-700 dark:text-ink-200">
             Current Health
-            <span className="font-semibold text-slate-500 dark:text-slate-400">{form.CurrentHealth}%</span>
+            <span className="font-semibold text-ink-500 dark:text-ink-400">{form.CurrentHealth}%</span>
           </span>
           <input
             type="range"
@@ -164,12 +164,12 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
             max={100}
             value={form.CurrentHealth}
             onChange={handleChange}
-            className="w-full accent-blue-600"
+            className="w-full accent-mint-600"
           />
         </label>
 
         <label className="block">
-          <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">QR Code</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">QR Code</span>
           <span className="flex items-center gap-2">
             <input
               name="QRCode"
@@ -177,12 +177,12 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
               onChange={handleChange}
               required
               placeholder="e.g. QR-104A"
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[14px] text-slate-800 dark:text-slate-100 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[14px] text-ink-800 dark:text-ink-100 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
             />
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, QRCode: generateQrCode() }))}
-              className="flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-[13px] font-medium text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-700/60"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-200 dark:border-ink-700 px-3 py-2.5 text-[13px] font-medium text-ink-600 dark:text-ink-300 transition hover:bg-ink-50 dark:hover:bg-ink-700/60"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Generate
@@ -195,14 +195,14 @@ export default function AssetFormModal({ asset, onSave, onClose }) {
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-[13.5px] font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700/60 disabled:opacity-60"
+            className="rounded-lg border border-ink-200 dark:border-ink-700 px-4 py-2.5 text-[13.5px] font-medium text-ink-700 dark:text-ink-200 transition hover:bg-ink-50 dark:hover:bg-ink-700/60 disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-[13.5px] font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex items-center gap-1.5 rounded-lg bg-mint px-4 py-2.5 text-[13.5px] font-semibold text-ink-dark transition hover:bg-mint-deep disabled:cursor-not-allowed disabled:opacity-70"
           >
             {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {isEdit ? "Save Changes" : "Add Asset"}

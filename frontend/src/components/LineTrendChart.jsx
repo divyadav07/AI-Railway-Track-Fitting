@@ -1,6 +1,6 @@
 // Small dependency-free SVG line chart. `points` is [{ x: label, y: number }].
 // Supports an optional second dashed series (`points2`) for predicted values.
-export default function LineTrendChart({ points, points2, height = 180, color = "#2563eb", color2 = "#ef4444" }) {
+export default function LineTrendChart({ points, points2, height = 180, color = "#14B385", color2 = "#E2643C" }) {
   const width = 560;
   const padding = 28;
   const all = [...points, ...(points2 || [])].map((p) => p.y).filter((v) => v != null);
@@ -37,7 +37,7 @@ export default function LineTrendChart({ points, points2, height = 180, color = 
           x2={width - padding}
           y1={padding + t * (height - padding * 2)}
           y2={padding + t * (height - padding * 2)}
-          stroke="#f1f5f9"
+          stroke="rgba(111,138,128,0.18)"
           strokeWidth={1}
         />
       ))}
@@ -59,7 +59,7 @@ export default function LineTrendChart({ points, points2, height = 180, color = 
           y={height - 6}
           fontSize="9.5"
           textAnchor="middle"
-          fill="#94a3b8"
+          fill="#8A9E97"
         >
           {p.x}
         </text>

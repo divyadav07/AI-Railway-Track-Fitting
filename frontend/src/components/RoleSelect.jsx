@@ -1,34 +1,35 @@
-import { ChevronDown } from "lucide-react";
+import { ShieldCheck, Wrench } from "lucide-react";
+import RoleCard from "./RoleCard";
 
-// Roles offered at login/sign-up. The backend compares the chosen Role with the one stored for the user.
-export const ROLE_OPTIONS = ["Track Inspector", "Maintenance Engineer", "Operations Manager", "Admin"];
+// RailSentry has two roles: Admin and Inspector.
+// `value` is exactly what the backend stores/compares (POST /api/login and /api/signUp send it
+// unchanged). "Track Inspector" is the Inspector value the existing backend already uses, so
+// existing accounts keep working - change it here if your database stores it differently.
+export const ROLES = [
+  { value: "Admin", label: "Admin", icon: ShieldCheck, description: "Manage assets & users" },
+  { value: "Track Inspector", label: "Inspector", icon: Wrench, description: "Scan & log inspections" },
+];
+export const DEFAULT_ROLE = "Track Inspector";
 
-// Role dropdown used on the Login and Signup forms.
-export default function RoleSelect({ label = "Role", name = "Role", value, onChange }) {
+// Friendly label for any backend role value (falls back to the raw value for legacy rows).
+export const roleLabel = (value) => ROLES.find((r) => r.value === value)?.label || value || "Inspector";
+
+// Admin / Inspector picker used on the Login and Signup forms. It calls onChange with a
+// change-event-shaped object ({ target: { name, value } }), so the pages' existing
+// handleChange keeps working untouched.
+export default function RoleSelect({ name = "Role", value, onChange }) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-[13px] font-medium text-slate-700">
-        {label}
-      </span>
-      <span className="relative flex items-center">
-        <select
-          name={name}
-          value={value}
-          onChange={onChange}
-          required
-          className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-3.5 pr-9 text-[14px] text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-        >
-          <option value="" disabled>
-            Select your role
-          </option>
-          {ROLE_OPTIONS.map((role) => (
-            <option key={role} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
-        <ChevronDown className="pointer-events-none absolute right-3 h-4 w-4 text-slate-400" />
-      </span>
-    </label>
+    <div role="radiogroup" aria-label="Role" className="flex gap-3">
+      {ROLES.map((r) => (
+        <RoleCard
+          key={r.value}
+          icon={r.icon}
+          label={r.label}
+          description={r.description}
+          active={value === r.value}
+          onClick={() => onChange({ target: { name, value: r.value } })}
+        />
+      ))}
+    </div>
   );
 }

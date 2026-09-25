@@ -110,14 +110,14 @@ export default function Assets() {
     <AppShell>
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Track Assets</h1>
-          <p className="mt-0.5 text-[13.5px] text-slate-500 dark:text-slate-400">
+          <h1 className="font-display text-[1.7rem] font-semibold leading-tight text-ink dark:text-white">Track Assets</h1>
+          <p className="mt-0.5 text-[13.5px] text-ink-500 dark:text-ink-400">
             Manage rail fittings, health status, and inspection records.
           </p>
         </div>
         <button
           onClick={() => setEditingAsset({})}
-          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-[13.5px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700"
+          className="flex items-center justify-center gap-2 rounded-lg bg-mint px-4 py-2.5 text-[13.5px] font-semibold text-ink-dark shadow-sm shadow-mint/20 transition hover:bg-mint-deep"
         >
           <Plus className="h-4 w-4" />
           Add Asset
@@ -129,18 +129,18 @@ export default function Assets() {
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <span className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by track number, location, fitting type, or QR code..."
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-9 pr-3 text-[13.5px] text-slate-800 dark:text-slate-100 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 py-2.5 pl-9 pr-3 text-[13.5px] text-ink-800 dark:text-ink-100 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
           />
         </span>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-[13.5px] text-slate-700 dark:text-slate-200 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+          className="rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-3 py-2.5 text-[13.5px] text-ink-700 dark:text-ink-200 outline-none transition focus:border-mint-600 focus:ring-2 focus:ring-mint/20"
         >
           <option value="All">All statuses</option>
           {STATUS_OPTIONS.map((s) => (
@@ -151,14 +151,14 @@ export default function Assets() {
         </select>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
         {loading ? (
-          <div className="flex items-center justify-center gap-2 py-16 text-slate-500 dark:text-slate-400">
+          <div className="flex items-center justify-center gap-2 py-16 text-ink-500 dark:text-ink-400">
             <Loader2 className="h-4.5 w-4.5 animate-spin" />
             Loading assets...
           </div>
         ) : filteredAssets.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-16 text-slate-400">
+          <div className="flex flex-col items-center gap-2 py-16 text-ink-400">
             <Boxes className="h-8 w-8" />
             <p className="text-[13.5px]">
               {assets.length === 0 ? "No assets yet. Add your first one." : "No assets match your filters."}
@@ -168,7 +168,7 @@ export default function Assets() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <tr className="border-b border-ink-100 dark:border-ink-800 bg-ink-50 dark:bg-ink-900 text-[11.5px] text-ink-500 dark:text-ink-400">
                   <th className="px-4 py-3 font-semibold">Fitting Type</th>
                   <th className="px-4 py-3 font-semibold">Track No.</th>
                   <th className="px-4 py-3 font-semibold">Location</th>
@@ -181,11 +181,11 @@ export default function Assets() {
               </thead>
               <tbody>
                 {filteredAssets.map((asset) => (
-                  <tr key={asset.AssetID} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/60">
-                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-100">{asset.FittingType}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{asset.TrackNumber}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{asset.Location}</td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
+                  <tr key={asset.AssetID} className="border-b border-ink-100 dark:border-ink-700/60 last:border-0 hover:bg-ink-50/70 dark:hover:bg-white/[0.03]">
+                    <td className="px-4 py-3 font-medium text-ink-800 dark:text-ink-100">{asset.FittingType}</td>
+                    <td className="px-4 py-3 text-ink-600 dark:text-ink-300">{asset.TrackNumber}</td>
+                    <td className="px-4 py-3 text-ink-600 dark:text-ink-300">{asset.Location}</td>
+                    <td className="px-4 py-3 text-ink-500 dark:text-ink-400">
                       {asset.InstallationDate ? toDateOnly(asset.InstallationDate) : "—"}
                     </td>
                     <td className="px-4 py-3">
@@ -194,9 +194,9 @@ export default function Assets() {
                     <td className="px-4 py-3">
                       <StatusBadge status={asset.Status} />
                     </td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
+                    <td className="px-4 py-3 text-ink-500 dark:text-ink-400">
                       <span className="inline-flex items-center gap-1.5">
-                        <QrCode className="h-3.5 w-3.5 text-slate-400" />
+                        <QrCode className="h-3.5 w-3.5 text-ink-400" />
                         {asset.QRCode}
                       </span>
                     </td>
@@ -205,14 +205,14 @@ export default function Assets() {
                         <button
                           onClick={() => setEditingAsset(asset)}
                           aria-label="Edit asset"
-                          className="rounded-lg p-2 text-slate-500 dark:text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                          className="rounded-lg p-2 text-ink-500 dark:text-ink-400 transition hover:bg-mint-50 dark:hover:bg-mint-500/10 hover:text-mint-700 dark:hover:text-mint-300"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingAsset(asset)}
                           aria-label="Delete asset"
-                          className="rounded-lg p-2 text-slate-500 dark:text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                          className="rounded-lg p-2 text-ink-500 dark:text-ink-400 transition hover:bg-rust-50 dark:hover:bg-rust-500/10 hover:text-rust-600 dark:hover:text-rust-300"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>

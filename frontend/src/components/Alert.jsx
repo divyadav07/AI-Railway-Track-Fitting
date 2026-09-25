@@ -1,16 +1,17 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
-// Small red (error) or green (success) message box. Renders nothing when `message` is empty.
+// Small rust (error) or mint (success) message box. Renders nothing when `message` is empty.
 export default function Alert({ type = "error", message }) {
   if (!message) return null;
 
   const isError = type === "error";
   return (
     <div
-      className={`mb-4 flex items-start gap-2 rounded-xl border px-3 py-2.5 text-[13px] ${
+      role={isError ? "alert" : "status"}
+      className={`mb-4 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-[13px] ${
         isError
-          ? "border-red-200 bg-red-50 text-red-700 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-300"
-          : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+          ? "border-rust-200 bg-rust-50 text-rust-700 dark:border-rust-500/30 dark:bg-rust-500/10 dark:text-rust-300"
+          : "border-mint-200 bg-mint-50 text-mint-800 dark:border-mint-500/30 dark:bg-mint-500/10 dark:text-mint-300"
       }`}
     >
       {isError ? (

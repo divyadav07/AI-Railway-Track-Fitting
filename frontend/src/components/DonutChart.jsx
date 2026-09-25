@@ -14,7 +14,7 @@ export default function DonutChart({ data, size = 160, thickness = 22, centerLab
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#f1f5f9"
+          stroke="rgba(111,138,128,0.18)"
           strokeWidth={thickness}
         />
         {data.map((d) => {
@@ -40,8 +40,8 @@ export default function DonutChart({ data, size = 160, thickness = 22, centerLab
       </svg>
       {(centerLabel || centerSub) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {centerLabel && <span className="text-xl font-bold text-slate-900">{centerLabel}</span>}
-          {centerSub && <span className="text-[11px] text-slate-500">{centerSub}</span>}
+          {centerLabel && <span className="font-display text-2xl font-semibold text-ink dark:text-white">{centerLabel}</span>}
+          {centerSub && <span className="text-[11px] text-ink-500 dark:text-ink-400">{centerSub}</span>}
         </div>
       )}
     </div>

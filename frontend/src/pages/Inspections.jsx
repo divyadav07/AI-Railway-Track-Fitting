@@ -16,11 +16,11 @@ import {
 import AppShell from "../components/AppShell";
 import { StatusBadge } from "../components/AssetBadges";
 import DonutChart from "../components/DonutChart";
-import {
-  MOCK_INSPECTIONS,
-  DETECTED_DEFECT_PRESETS,
-  HEALTH_SCORE_BREAKDOWN,
-} from "../data/mockData";
+
+// No inspection/detection endpoints on the backend yet - these start empty (0)
+// instead of sample data, ready to be swapped for real API responses.
+const INSPECTIONS = [];
+const HEALTH_BREAKDOWN = null;
 
 // The three steps of the new-inspection wizard.
 const STEPS = [
@@ -45,12 +45,12 @@ function QrStep({ assetId, onScanned }) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
+      <div className="rounded-2xl border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-5">
         <div className="mb-4 flex gap-2">
           <button
             onClick={() => setMode("generate")}
             className={`rounded-lg px-3 py-1.5 text-[13px] font-medium ${
-              mode === "generate" ? "bg-blue-50 text-blue-700" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+              mode === "generate" ? "bg-mint-50 dark:bg-mint-500/10 text-mint-800 dark:text-mint-300" : "text-ink-500 dark:text-ink-400 hover:bg-ink-50 dark:hover:bg-ink-700/60"
             }`}
           >
             Generate QR Code
@@ -58,7 +58,7 @@ function QrStep({ assetId, onScanned }) {
           <button
             onClick={() => setMode("scan")}
             className={`rounded-lg px-3 py-1.5 text-[13px] font-medium ${
-              mode === "scan" ? "bg-blue-50 text-blue-700" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+              mode === "scan" ? "bg-mint-50 dark:bg-mint-500/10 text-mint-800 dark:text-mint-300" : "text-ink-500 dark:text-ink-400 hover:bg-ink-50 dark:hover:bg-ink-700/60"
             }`}
           >
             Scan QR Code
@@ -68,37 +68,37 @@ function QrStep({ assetId, onScanned }) {
         {mode === "generate" ? (
           <>
             <label className="mb-4 block">
-              <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-200">Asset ID</span>
+              <span className="mb-1.5 block text-[13px] font-medium text-ink-700 dark:text-ink-200">Asset ID</span>
               <input
                 value={assetId}
                 readOnly
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2.5 text-[13.5px] text-slate-700 dark:text-slate-200"
+                className="w-full rounded-lg border border-ink-200 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 px-3 py-2.5 text-[13.5px] text-ink-700 dark:text-ink-200"
               />
             </label>
-            <div className="mb-4 grid h-48 place-items-center rounded-xl border border-dashed border-slate-300 bg-slate-50 dark:bg-slate-900">
-              <QrCode className="h-24 w-24 text-slate-800 dark:text-slate-100" strokeWidth={1.1} />
+            <div className="mb-4 grid h-48 place-items-center rounded-lg border border-dashed border-ink-300 bg-ink-50 dark:bg-ink-900">
+              <QrCode className="h-24 w-24 text-ink-800 dark:text-ink-100" strokeWidth={1.1} />
             </div>
             <div className="flex gap-2">
-              <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-blue-600 py-2.5 text-[13px] font-semibold text-white hover:bg-blue-700">
+              <button className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-mint py-2.5 text-[13px] font-semibold text-ink-dark hover:bg-mint-deep">
                 <Download className="h-4 w-4" /> Download
               </button>
-              <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 py-2.5 text-[13px] font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60">
+              <button className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-ink-200 dark:border-ink-700 py-2.5 text-[13px] font-medium text-ink-700 dark:text-ink-200 hover:bg-ink-50 dark:hover:bg-ink-700/60">
                 <Printer className="h-4 w-4" /> Print
               </button>
             </div>
           </>
         ) : (
           <>
-            <div className="relative mb-4 grid h-48 place-items-center overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900">
-              <ScanLine className={`h-16 w-16 text-emerald-400 ${scanning ? "animate-pulse" : ""}`} />
-              <span className="absolute bottom-3 text-[12px] text-slate-300">
+            <div className="relative mb-4 grid h-48 place-items-center overflow-hidden rounded-lg border border-ink-200 dark:border-ink-700 bg-ink-900">
+              <ScanLine className={`h-16 w-16 text-mint-400 ${scanning ? "animate-pulse" : ""}`} />
+              <span className="absolute bottom-3 text-[12px] text-ink-300">
                 {scanning ? "Scanning…" : "Point camera at the fitting's QR code"}
               </span>
             </div>
             <button
               onClick={handleScan}
               disabled={scanning}
-              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 py-2.5 text-[13px] font-semibold text-white hover:bg-blue-700 disabled:opacity-70"
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-mint py-2.5 text-[13px] font-semibold text-ink-dark hover:bg-mint-deep disabled:opacity-70"
             >
               {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}
               {scanning ? "Scanning…" : "Simulate Scan"}
@@ -107,8 +107,8 @@ function QrStep({ assetId, onScanned }) {
         )}
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-[13px] text-slate-600 dark:text-slate-300">
-        <h3 className="mb-2 text-[13.5px] font-semibold text-slate-800 dark:text-slate-100">How it works</h3>
+      <div className="rounded-2xl border border-ink-200 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 p-5 text-[13px] text-ink-600 dark:text-ink-300">
+        <h3 className="mb-2 font-display text-[16px] font-medium text-ink-800 dark:text-ink-100">How it works</h3>
         <ol className="list-decimal space-y-1.5 pl-4">
           <li>Generate a QR code for a track fitting when it's installed and print it onto a durable tag.</li>
           <li>During field inspections, scan the tag to instantly pull up the asset's full history.</li>
@@ -123,11 +123,11 @@ function QrStep({ assetId, onScanned }) {
 function CaptureStep({ image, onCapture }) {
   return (
     <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-900" style={{ minHeight: 320 }}>
+      <div className="relative overflow-hidden rounded-2xl border border-ink-200 dark:border-ink-700 bg-ink-900" style={{ minHeight: 320 }}>
         {image ? (
           <img src={image} alt="Captured fitting" className="h-full w-full object-cover" />
         ) : (
-          <div className="grid h-full min-h-[320px] place-items-center text-slate-400">
+          <div className="grid h-full min-h-[320px] place-items-center text-ink-400">
             <div className="text-center">
               <ImageIcon className="mx-auto h-10 w-10" />
               <p className="mt-2 text-[13px]">Capture a clear image of the fitting</p>
@@ -142,21 +142,21 @@ function CaptureStep({ image, onCapture }) {
               "https://images.unsplash.com/photo-1516937941344-00b4e0337589?q=80&w=800&auto=format&fit=crop"
             )
           }
-          className="flex flex-col items-center gap-1.5 text-slate-600 dark:text-slate-300"
+          className="flex flex-col items-center gap-1.5 text-ink-600 dark:text-ink-300"
         >
-          <span className="grid h-14 w-14 place-items-center rounded-full border-4 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:border-blue-300">
-            <Camera className="h-5 w-5 text-slate-700 dark:text-slate-200" />
+          <span className="grid h-14 w-14 place-items-center rounded-full border-4 border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm hover:border-mint-300">
+            <Camera className="h-5 w-5 text-ink-700 dark:text-ink-200" />
           </span>
           <span className="text-[11.5px] font-medium">Capture</span>
         </button>
-        <button className="flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400">
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200">
+        <button className="flex flex-col items-center gap-1.5 text-ink-500 dark:text-ink-400">
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-ink-100 dark:bg-ink-700 hover:bg-ink-200">
             <RotateCw className="h-4 w-4" />
           </span>
           <span className="text-[11px]">Flip</span>
         </button>
-        <button className="flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400">
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200">
+        <button className="flex flex-col items-center gap-1.5 text-ink-500 dark:text-ink-400">
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-ink-100 dark:bg-ink-700 hover:bg-ink-200">
             <ImageIcon className="h-4 w-4" />
           </span>
           <span className="text-[11px]">Gallery</span>
@@ -167,15 +167,15 @@ function CaptureStep({ image, onCapture }) {
 }
 
 // Wizard step 3: run (simulated) AI defect detection on the photo and list the defects found.
-function DetectStep({ image, running, defects, onRun }) {
+function DetectStep({ image, running, defects, hasRun, onRun }) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-900" style={{ minHeight: 320 }}>
+      <div className="relative overflow-hidden rounded-2xl border border-ink-200 dark:border-ink-700 bg-ink-900" style={{ minHeight: 320 }}>
         {image && <img src={image} alt="Analyzed fitting" className="h-full w-full object-cover opacity-90" />}
         {running && (
-          <div className="absolute inset-0 grid place-items-center bg-slate-900/60">
-            <div className="flex items-center gap-2 rounded-xl bg-white/95 px-4 py-2.5 text-[13px] font-medium text-slate-700 dark:text-slate-200">
-              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+          <div className="absolute inset-0 grid place-items-center bg-ink-900/60">
+            <div className="flex items-center gap-2 rounded-lg bg-white/95 px-4 py-2.5 text-[13px] font-medium text-ink-700 dark:text-ink-200">
+              <Loader2 className="h-4 w-4 animate-spin text-mint-700 dark:text-mint-300" />
               Running YOLOv8 detection…
             </div>
           </div>
@@ -195,13 +195,17 @@ function DetectStep({ image, running, defects, onRun }) {
         )}
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
-        <h3 className="mb-3 text-[13.5px] font-semibold text-slate-900 dark:text-white">Detected Defects</h3>
-        {defects.length === 0 && !running ? (
+      <div className="rounded-2xl border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-5">
+        <h3 className="mb-3 font-display text-[16px] font-medium text-ink-900 dark:text-white">Detected Defects</h3>
+        {defects.length === 0 && !running && hasRun ? (
+          <p className="py-6 text-center text-[13px] text-ink-400">
+            AI detection isn't connected to a model yet — no defects to show.
+          </p>
+        ) : defects.length === 0 && !running ? (
           <button
             onClick={onRun}
             disabled={!image}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 py-2.5 text-[13px] font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-mint py-2.5 text-[13px] font-semibold text-ink-dark hover:bg-mint-deep disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Sparkles className="h-4 w-4" />
             Run AI Detection
@@ -212,8 +216,8 @@ function DetectStep({ image, running, defects, onRun }) {
               <li key={d.label} className="flex items-start gap-2.5">
                 <span className="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
                 <div>
-                  <p className="text-[13px] font-medium text-slate-800 dark:text-slate-100">{d.label}</p>
-                  <p className="text-[11.5px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[13px] font-medium text-ink-800 dark:text-ink-100">{d.label}</p>
+                  <p className="text-[11.5px] text-ink-500 dark:text-ink-400">
                     Confidence: {(d.confidence * 100).toFixed(0)}%
                   </p>
                 </div>
@@ -222,7 +226,7 @@ function DetectStep({ image, running, defects, onRun }) {
           </ul>
         )}
         {defects.length > 0 && (
-          <p className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-3 text-[11.5px] text-slate-400">
+          <p className="mt-4 border-t border-ink-100 dark:border-ink-800 pt-3 text-[11.5px] text-ink-400">
             Model: YOLOv8 · Processed in 0.45s
           </p>
         )}
@@ -231,74 +235,97 @@ function DetectStep({ image, running, defects, onRun }) {
   );
 }
 
-// Inspection History tab: past inspections and the health-score breakdown (sample data).
+// Inspection History tab: past inspections and the health-score breakdown.
+// No inspection endpoint on the backend yet, so this starts empty (0) rather
+// than showing sample data.
 function HistoryTab() {
-  const breakdown = HEALTH_SCORE_BREAKDOWN["AST-1003"];
+  const breakdown = HEALTH_BREAKDOWN;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[300px_1fr]">
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
-        <h3 className="mb-4 text-[13.5px] font-semibold text-slate-900 dark:text-white">Health Score — AST-1003</h3>
-        <div className="flex justify-center">
-          <DonutChart
-            data={[
-              { label: "Score", value: breakdown.Score, color: "#f59e0b" },
-              { label: "Remaining", value: 100 - breakdown.Score, color: "#f1f5f9" },
-            ]}
-            centerLabel={`${breakdown.Score}%`}
-            centerSub="Health Score"
-          />
-        </div>
-        <div className="mt-4 flex justify-center">
-          <StatusBadge status={breakdown.Status} />
-        </div>
-        <ul className="mt-5 space-y-2 border-t border-slate-100 dark:border-slate-800 pt-4">
-          {breakdown.Factors.map((f) => (
-            <li key={f.label} className="flex items-center justify-between text-[13px]">
-              <span className="text-slate-600 dark:text-slate-300">{f.label}</span>
-              <span className={f.impact < 0 ? "font-semibold text-red-600" : "text-slate-400"}>
-                {f.impact === 0 ? "0%" : `${f.impact}%`}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2.5 text-[12px] leading-relaxed text-amber-800">
-          {breakdown.Recommendation}
-        </p>
+      <div className="rounded-2xl border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-5">
+        <h3 className="mb-4 font-display text-[16px] font-medium text-ink-900 dark:text-white">Health Score</h3>
+        {!breakdown ? (
+          <>
+            <div className="flex justify-center">
+              <DonutChart
+                data={[{ label: "No data", value: 1, color: "rgba(111,138,128,0.18)" }]}
+                centerLabel="0%"
+                centerSub="Health Score"
+              />
+            </div>
+            <p className="mt-5 text-center text-[13px] text-ink-400">
+              No inspection selected yet.
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="flex justify-center">
+              <DonutChart
+                data={[
+                  { label: "Score", value: breakdown.Score, color: "#E9B23F" },
+                  { label: "Remaining", value: 100 - breakdown.Score, color: "rgba(111,138,128,0.18)" },
+                ]}
+                centerLabel={`${breakdown.Score}%`}
+                centerSub="Health Score"
+              />
+            </div>
+            <div className="mt-4 flex justify-center">
+              <StatusBadge status={breakdown.Status} />
+            </div>
+            <ul className="mt-5 space-y-2 border-t border-ink-100 dark:border-ink-800 pt-4">
+              {breakdown.Factors.map((f) => (
+                <li key={f.label} className="flex items-center justify-between text-[13px]">
+                  <span className="text-ink-600 dark:text-ink-300">{f.label}</span>
+                  <span className={f.impact < 0 ? "font-semibold text-rust-600 dark:text-rust-300" : "text-ink-400"}>
+                    {f.impact === 0 ? "0%" : `${f.impact}%`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-3 py-2.5 text-[12px] leading-relaxed text-amber-800 dark:text-amber-300">
+              {breakdown.Recommendation}
+            </p>
+          </>
+        )}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-        <div className="border-b border-slate-100 dark:border-slate-800 px-5 py-4">
-          <h3 className="text-[13.5px] font-semibold text-slate-900 dark:text-white">Inspection History</h3>
+      <div className="overflow-hidden rounded-2xl border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
+        <div className="border-b border-ink-100 dark:border-ink-800 px-5 py-4">
+          <h3 className="font-display text-[16px] font-medium text-ink-900 dark:text-white">Inspection History</h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-[13px]">
-            <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                <th className="px-5 py-2.5 font-semibold">Asset ID</th>
-                <th className="px-5 py-2.5 font-semibold">Track</th>
-                <th className="px-5 py-2.5 font-semibold">Inspector</th>
-                <th className="px-5 py-2.5 font-semibold">Health Score</th>
-                <th className="px-5 py-2.5 font-semibold">Status</th>
-                <th className="px-5 py-2.5 font-semibold">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {MOCK_INSPECTIONS.map((insp) => (
-                <tr key={insp.ID} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/60">
-                  <td className="px-5 py-3 font-medium text-slate-800 dark:text-slate-100">{insp.AssetID}</td>
-                  <td className="px-5 py-3 text-slate-600 dark:text-slate-300">Track {insp.TrackNumber}</td>
-                  <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{insp.Inspector}</td>
-                  <td className="px-5 py-3 font-semibold text-slate-700 dark:text-slate-200">{insp.HealthScore}%</td>
-                  <td className="px-5 py-3">
-                    <StatusBadge status={insp.Status} />
-                  </td>
-                  <td className="px-5 py-3 text-slate-500 dark:text-slate-400">{insp.Date}</td>
+        {INSPECTIONS.length === 0 ? (
+          <p className="py-16 text-center text-[13px] text-ink-400">No inspections logged yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-[13px]">
+              <thead>
+                <tr className="border-b border-ink-100 dark:border-ink-800 bg-ink-50 dark:bg-ink-900 text-[11.5px] text-ink-500 dark:text-ink-400">
+                  <th className="px-5 py-2.5 font-semibold">Asset ID</th>
+                  <th className="px-5 py-2.5 font-semibold">Track</th>
+                  <th className="px-5 py-2.5 font-semibold">Inspector</th>
+                  <th className="px-5 py-2.5 font-semibold">Health Score</th>
+                  <th className="px-5 py-2.5 font-semibold">Status</th>
+                  <th className="px-5 py-2.5 font-semibold">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {INSPECTIONS.map((insp) => (
+                  <tr key={insp.ID} className="border-b border-ink-100 dark:border-ink-700/60 last:border-0 hover:bg-ink-50/70 dark:hover:bg-white/[0.03]">
+                    <td className="px-5 py-3 font-medium text-ink-800 dark:text-ink-100">{insp.AssetID}</td>
+                    <td className="px-5 py-3 text-ink-600 dark:text-ink-300">Track {insp.TrackNumber}</td>
+                    <td className="px-5 py-3 text-ink-600 dark:text-ink-300">{insp.Inspector}</td>
+                    <td className="px-5 py-3 font-semibold text-ink-700 dark:text-ink-200">{insp.HealthScore}%</td>
+                    <td className="px-5 py-3">
+                      <StatusBadge status={insp.Status} />
+                    </td>
+                    <td className="px-5 py-3 text-ink-500 dark:text-ink-400">{insp.Date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -312,6 +339,7 @@ export default function Inspections() {
   const [image, setImage] = useState(null);
   const [running, setRunning] = useState(false);
   const [defects, setDefects] = useState([]);
+  const [hasRun, setHasRun] = useState(false);
 
   const assetId = "AST-1003";
 
@@ -321,12 +349,14 @@ export default function Inspections() {
     return true;
   }, [step, image]);
 
-  // Simulates AI detection (1.5s), then fills in preset sample defects.
+  // The AI detection endpoint isn't wired up yet, so this just clears the
+  // loading state instead of filling in sample defects.
   const runDetection = () => {
     setRunning(true);
     setTimeout(() => {
-      setDefects(DETECTED_DEFECT_PRESETS);
+      setDefects([]);
       setRunning(false);
+      setHasRun(true);
     }, 1500);
   };
 
@@ -336,22 +366,23 @@ export default function Inspections() {
     setImage(null);
     setDefects([]);
     setRunning(false);
+    setHasRun(false);
   };
 
   return (
     <AppShell>
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Inspections</h1>
-          <p className="mt-0.5 text-[13.5px] text-slate-500 dark:text-slate-400">
+          <h1 className="font-display text-[1.7rem] font-semibold leading-tight text-ink dark:text-white">Inspections</h1>
+          <p className="mt-0.5 text-[13.5px] text-ink-500 dark:text-ink-400">
             Run a new field inspection or review past results and health scores.
           </p>
         </div>
-        <div className="flex gap-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1">
+        <div className="flex gap-1 rounded-lg border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-1">
           <button
             onClick={() => setTab("new")}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium ${
-              tab === "new" ? "bg-blue-600 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+              tab === "new" ? "bg-mint text-ink-dark" : "text-ink-600 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-ink-700/60"
             }`}
           >
             <Sparkles className="h-3.5 w-3.5" /> New Inspection
@@ -359,7 +390,7 @@ export default function Inspections() {
           <button
             onClick={() => setTab("history")}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium ${
-              tab === "history" ? "bg-blue-600 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+              tab === "history" ? "bg-mint text-ink-dark" : "text-ink-600 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-ink-700/60"
             }`}
           >
             <History className="h-3.5 w-3.5" /> History &amp; Health Score
@@ -379,18 +410,18 @@ export default function Inspections() {
               return (
                 <div key={s.key} className="flex flex-1 items-center gap-2">
                   <div
-                    className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-[13px] font-medium ${
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-[13px] font-medium ${
                       active
-                        ? "border-blue-300 bg-blue-50 text-blue-700"
+                        ? "border-mint-300 bg-mint-50 dark:bg-mint-500/10 text-mint-800 dark:text-mint-300"
                         : done
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400"
+                        ? "border-mint-200 dark:border-mint-500/30 bg-mint-50 dark:bg-mint-500/10 text-mint-800 dark:text-mint-300"
+                        : "border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 text-ink-400"
                     }`}
                   >
                     {done ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                     {s.label}
                   </div>
-                  {i < STEPS.length - 1 && <div className="h-px flex-1 bg-slate-200" />}
+                  {i < STEPS.length - 1 && <div className="h-px flex-1 bg-ink-200" />}
                 </div>
               );
             })}
@@ -399,13 +430,13 @@ export default function Inspections() {
           {step === 0 && <QrStep assetId={assetId} onScanned={() => setStep(1)} />}
           {step === 1 && <CaptureStep image={image} onCapture={setImage} />}
           {step === 2 && (
-            <DetectStep image={image} running={running} defects={defects} onRun={runDetection} />
+            <DetectStep image={image} running={running} defects={defects} hasRun={hasRun} onRun={runDetection} />
           )}
 
           <div className="mt-6 flex justify-between">
             <button
               onClick={() => (step === 0 ? resetWizard() : setStep((s) => s - 1))}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-[13.5px] font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+              className="rounded-lg border border-ink-200 dark:border-ink-700 px-4 py-2.5 text-[13.5px] font-medium text-ink-700 dark:text-ink-200 hover:bg-ink-50 dark:hover:bg-ink-700/60"
             >
               {step === 0 ? "Reset" : "Back"}
             </button>
@@ -413,15 +444,15 @@ export default function Inspections() {
               <button
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!canNext}
-                className="rounded-xl bg-blue-600 px-5 py-2.5 text-[13.5px] font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-mint px-5 py-2.5 text-[13.5px] font-semibold text-ink-dark hover:bg-mint-deep disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Continue
               </button>
             ) : (
               <button
                 onClick={resetWizard}
-                disabled={defects.length === 0}
-                className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-[13.5px] font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={!hasRun}
+                className="flex items-center gap-1.5 rounded-lg bg-mint px-5 py-2.5 text-[13.5px] font-semibold text-ink-dark hover:bg-mint-deep disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <CheckCircle2 className="h-4 w-4" /> Save Inspection
               </button>

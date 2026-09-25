@@ -1,19 +1,22 @@
-import { TrainFront } from "lucide-react";
+import { Link } from "react-router-dom";
 
-// App logo (train icon + "AI RAILWAY TRACK FITTING" text).
-export default function Logo() {
+/**
+ * Wordmark: a squared "rail spike" glyph + Fraunces wordmark.
+ * `tone="light"` for dark backgrounds, `tone="dark"` for light ones.
+ * `to` lets the app shell point the logo at /dashboard instead of the landing page.
+ */
+export default function Logo({ tone = "light", className = "", to = "/" }) {
+  const textColor = tone === "light" ? "text-white" : "text-ink";
+
   return (
-    <div className="flex items-center gap-2.5">
-      <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/10">
-        <TrainFront className="h-5 w-5 text-sky-300" />
+    <Link to={to} className={`inline-flex items-center gap-2.5 group ${className}`}>
+      <span className="relative flex h-8 w-8 items-center justify-center rounded-[6px] bg-gradient-to-br from-mint to-mint-deep shrink-0">
+        <span className="absolute inset-[3px] rounded-[3px] bg-ink" />
+        <span className="relative h-1.5 w-1.5 rounded-full bg-mint" />
       </span>
-      <span className="text-[15px] font-semibold leading-tight text-white">
-        AI <span className="text-sky-400">RAILWAY</span>
-        <br />
-        <span className="text-[10px] font-medium tracking-[0.2em] text-slate-300">
-          TRACK FITTING
-        </span>
+      <span className={`font-display text-[1.35rem] leading-none ${textColor}`}>
+        RailSentry<span className="text-mint">.</span>
       </span>
-    </div>
+    </Link>
   );
 }

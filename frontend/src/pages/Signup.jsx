@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { User, Mail, Phone, Lock, UserPlus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import LabeledInput from "../components/LabeledInput";
-import RoleSelect from "../components/RoleSelect";
+import RoleSelect, { DEFAULT_ROLE, roleLabel } from "../components/RoleSelect";
 import Button from "../components/Button";
 import Alert from "../components/Alert";
-import SocialButtons from "../components/SocialButtons";
-import { SignupInfoPanel } from "../components/InfoPanel";
-import TrustBar from "../components/TrustBar";
+import AuthSidePanel from "../components/AuthSidePanel";
 
 // Empty sign-up form. ConfirmPassword is checked in the browser only and never sent to the backend.
 const initialForm = {
@@ -17,8 +16,14 @@ const initialForm = {
   Phone: "",
   Password: "",
   ConfirmPassword: "",
-  Role: "",
+  Role: DEFAULT_ROLE,
 };
+
+const sidePoints = [
+  "One record per fitting or depot, verified once and reused everywhere",
+  "Admins register assets and manage users; inspectors scan and log results",
+  "Every scan links straight back to your account",
+];
 
 // Sign-up page: validates locally, then calls POST /api/signUp and redirects to login.
 export default function Signup() {
@@ -60,65 +65,69 @@ export default function Signup() {
   };
 
   return (
-    <div
-      className="relative flex min-h-screen w-full flex-col items-center justify-center bg-cover bg-center px-4 py-10"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(5,10,20,0.55), rgba(5,10,20,0.75)), url('https://images.unsplash.com/photo-1474487548417-781cb71495f3?q=80&w=1600&auto=format&fit=crop')",
-      }}
-    >
-      <div className="grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-2xl md:grid-cols-2">
-        <div className="hidden p-2.5 md:block">
-          <SignupInfoPanel />
-        </div>
+    <div className="flex min-h-screen bg-fog text-ink">
+      <AuthSidePanel
+        title="Set up once."
+        highlight="Tracked every day after."
+        description="Register as an admin or an inspector and RailSentry starts reading fitting signals the moment you're connected."
+        points={sidePoints}
+      />
 
-        <div className="flex min-h-[560px] flex-col justify-center px-8 py-10 sm:px-12">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-[22px] font-bold text-slate-900">Create Account</h1>
-              <p className="mt-1 text-[13.5px] text-slate-500">
-                Sign up to get started with AI Railway
-              </p>
-            </div>
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600">
-              <UserPlus className="h-5 w-5" />
-            </span>
+      <div className="flex flex-1 items-center justify-center px-6 py-14 sm:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-[440px]"
+        >
+          <div className="mb-10 lg:hidden">
+            <Link to="/" className="font-display text-xl text-ink">
+              RailSentry<span className="text-mint-deep">.</span>
+            </Link>
           </div>
 
-          <Alert type="error" message={error} />
-          <Alert type="success" message={success} />
+          <h2 className="font-display text-[1.85rem] text-ink">Create your account</h2>
+          <p className="mt-2 text-[0.92rem] text-ink/50">
+            Choose your role, then fill in your details.
+          </p>
 
-          <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+          <div className="mt-7">
+            <RoleSelect value={form.Role} onChange={handleChange} />
+          </div>
+
+          <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
+            <Alert type="error" message={error} />
+            <Alert type="success" message={success} />
+
             <LabeledInput
-              label="Full Name"
+              label="Full name"
               icon={User}
               name="Name"
               value={form.Name}
               onChange={handleChange}
-              placeholder="Enter your full name"
+              placeholder="As it appears on your ID"
               autoComplete="name"
             />
             <LabeledInput
-              label="Email Address"
+              label="Email"
               icon={Mail}
               type="email"
               name="Email"
               value={form.Email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="you@example.com"
               autoComplete="email"
             />
             <LabeledInput
-              label="Phone"
+              label="Mobile number"
               icon={Phone}
               type="tel"
               name="Phone"
               value={form.Phone}
               onChange={handleChange}
-              placeholder="Enter your phone number"
+              placeholder="98xxxxxxxx"
               autoComplete="tel"
             />
-            <RoleSelect value={form.Role} onChange={handleChange} />
             <LabeledInput
               label="Password"
               icon={Lock}
@@ -130,7 +139,7 @@ export default function Signup() {
               toggleablePassword
             />
             <LabeledInput
-              label="Confirm Password"
+              label="Confirm password"
               icon={Lock}
               name="ConfirmPassword"
               value={form.ConfirmPassword}
@@ -140,42 +149,38 @@ export default function Signup() {
               toggleablePassword
             />
 
-            <label className="flex items-start gap-2 pt-1 text-[12.5px] text-slate-500">
+            <label className="flex items-start gap-2 text-[0.85rem] text-ink/50">
               <input
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-400"
+                className="mt-0.5 h-3.5 w-3.5 rounded border-ink/30 accent-mint-600"
               />
               <span>
                 I agree to the{" "}
-                <a href="#" className="font-medium text-blue-600 hover:underline">
+                <a href="#" className="font-medium text-mint-700 hover:text-ink">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="font-medium text-blue-600 hover:underline">
+                <a href="#" className="font-medium text-mint-700 hover:text-ink">
                   Privacy Policy
                 </a>
               </span>
             </label>
 
-            <Button icon={UserPlus} loading={loading}>
-              Sign Up
+            <Button type="submit" icon={UserPlus} loading={loading} className="w-full" size="lg">
+              Create account — {roleLabel(form.Role).toLowerCase()}
             </Button>
           </form>
 
-          <SocialButtons />
-
-          <p className="mt-6 text-center text-[13px] text-slate-500">
+          <p className="mt-8 text-center text-[0.9rem] text-ink/50">
             Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-blue-600 hover:underline">
-              Login
+            <Link to="/login" className="font-medium text-mint-700 transition-colors hover:text-ink">
+              Log in
             </Link>
           </p>
-        </div>
+        </motion.div>
       </div>
-
-      <TrustBar />
     </div>
   );
 }
