@@ -2,14 +2,21 @@ import { useState, useEffect } from "react";
 import Modal from "../Modal.jsx";
 import { fittingTypes, assetStatuses } from "../../data/assetsData.js";
 
-const blank = { id: "", type: fittingTypes[0], location: "", status: assetStatuses[0], health: 80 };
+const blank = {
+  type: fittingTypes[0],
+  trackNumber: "",
+  location: "",
+  status: assetStatuses[0],
+  health: 80,
+  installationDate: "",
+};
 
-export default function AssetFormModal({ open, onClose, onSave, asset }) {
+export default function AssetFormModal({ open, onClose, onSave, asset, saving = false }) {
   const [form, setForm] = useState(blank);
   const isEdit = Boolean(asset);
 
   useEffect(() => {
-    setForm(asset ? { ...asset } : blank);
+    setForm(asset ? { ...blank, ...asset } : blank);
   }, [asset, open]);
 
   const handleChange = (e) => {
@@ -19,27 +26,12 @@ export default function AssetFormModal({ open, onClose, onSave, asset }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Frontend only — replace with a real POST/PATCH call to your asset API.
     onSave(form);
   };
 
   return (
     <Modal open={open} onClose={onClose} title={isEdit ? `Edit Asset ${asset.id}` : "Add New Asset"}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {!isEdit && (
-          <div>
-            <label className="field-label">Asset ID</label>
-            <input
-              name="id"
-              value={form.id}
-              onChange={handleChange}
-              required
-              placeholder="e.g. 091"
-              className="field-input"
-            />
-          </div>
-        )}
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="field-label">Fitting Type</label>
@@ -50,26 +42,41 @@ export default function AssetFormModal({ open, onClose, onSave, asset }) {
             </select>
           </div>
           <div>
-            <label className="field-label">Location</label>
+            <label className="field-label">Track Number</label>
             <input
-              name="location"
-              value={form.location}
+              name="trackNumber"
+              value={form.trackNumber}
               onChange={handleChange}
               required
-              placeholder="e.g. KM 249/3"
+              placeholder="e.g. TRK-12"
               className="field-input"
             />
           </div>
         </div>
 
+        <div>
+          <label className="field-label">Location</label>
+          <input
+            name="location"
+            value={form.location}
+            onChange={handleChange}
+            required
+            placeholder="e.g. KM 249/3"
+            className="field-input"
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="field-label">Status</label>
-            <select name="status" value={form.status} onChange={handleChange} className="field-input">
-              {assetStatuses.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+            <label className="field-label">Installation Date</label>
+            <input
+              type="date"
+              name="installationDate"
+              value={form.installationDate}
+              onChange={handleChange}
+              required
+              className="field-input"
+            />
           </div>
           <div>
             <label className="field-label">Health score (%)</label>
@@ -85,12 +92,21 @@ export default function AssetFormModal({ open, onClose, onSave, asset }) {
           </div>
         </div>
 
+        <div>
+          <label className="field-label">Status</label>
+          <select name="status" value={form.status} onChange={handleChange} className="field-input">
+            {assetStatuses.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} className="btn-outline">
             Cancel
           </button>
-          <button type="submit" className="btn-primary">
-            {isEdit ? "Save Changes" : "Add Asset"}
+          <button type="submit" disabled={saving} className="btn-primary disabled:opacity-60">
+            {saving ? "Saving…" : isEdit ? "Save Changes" : "Add Asset"}
           </button>
         </div>
       </form>

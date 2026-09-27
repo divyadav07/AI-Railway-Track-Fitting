@@ -1,26 +1,41 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Mail, Lock, AlertCircle } from "lucide-react";
 import Logo from "../components/Logo.jsx";
 import RoleCard from "../components/RoleCard.jsx";
 import SignalChain from "../components/SignalChain.jsx";
 import { roles } from "../data/content.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, loading } = useAuth();
   const [role, setRole] = useState("inspector");
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [formError, setFormError] = useState("");
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Frontend only — replace this with your real auth request. For now this
-    // just routes to the matching dashboard so the UI can be reviewed end to end.
-    console.log("Login submitted:", { role, ...form });
-    navigate(`/dashboard/${role}`);
+    setFormError("");
+
+    if (!form.email || !form.password) {
+      setFormError("Please enter your email and password.");
+      return;
+    }
+
+    try {
+      const user = await login({ email: form.email, password: form.password, role });
+      const userRole = (user?.Role || role).toLowerCase();
+      const redirectTo = location.state?.from?.pathname || `/dashboard/${userRole}`;
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setFormError(err.message || "Login failed. Please check your credentials.");
+    }
   };
 
   const activeRole = roles.find((r) => r.key === role);
@@ -156,8 +171,15 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button type="submit" className="btn-primary w-full py-3.5">
-              Log in as {activeRole.label}
+            {formError && (
+              <div className="flex items-start gap-2 rounded-lg bg-red-50 px-3.5 py-2.5 text-[0.82rem] text-red-600">
+                <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 disabled:opacity-60">
+              {loading ? "Logging in…" : `Log in as ${activeRole.label}`}
             </button>
           </form>
 

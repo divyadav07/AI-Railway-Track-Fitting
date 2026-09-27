@@ -1,26 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Pencil, QrCode, Trash2, ScanLine, MapPin, CalendarClock } from "lucide-react";
+import { ArrowLeft, Pencil, QrCode, Trash2, ScanLine, MapPin, CalendarClock, AlertTriangle } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout.jsx";
 import StatusPill, { healthColor } from "../../components/dashboard/StatusPill.jsx";
 import AssetHealthBar from "../../components/assets/AssetHealthBar.jsx";
 import AssetFormModal from "../../components/assets/AssetFormModal.jsx";
 import QRCodeModal from "../../components/assets/QRCodeModal.jsx";
-import { getAssetById } from "../../data/assetsData.js";
+import * as assetsApi from "../../api/assets.js";
+import { mapAssetFromApi, mapAssetToApi } from "../../utils/assetMapper.js";
 
 export default function AssetDetailPage({ role }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const asset = getAssetById(id);
+
+  const [asset, setAsset] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const [editOpen, setEditOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  async function loadAsset() {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await assetsApi.getAsset(id);
+      setAsset(mapAssetFromApi(res.data));
+    } catch (err) {
+      setError(err.message || "Failed to load asset.");
+      setAsset(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadAsset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const handleSaveEdit = async (form) => {
+    setSaving(true);
+    try {
+      await assetsApi.updateAsset(id, mapAssetToApi(form));
+      setEditOpen(false);
+      await loadAsset();
+    } catch (err) {
+      setError(err.message || "Failed to update asset.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await assetsApi.deleteAsset(id);
+      navigate(`/dashboard/${role}/assets`);
+    } catch (err) {
+      setError(err.message || "Failed to delete asset.");
+      setDeleteOpen(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout role={role}>
+        <p className="text-[0.9rem] text-brand-sub">Loading asset…</p>
+      </DashboardLayout>
+    );
+  }
 
   if (!asset) {
     return (
       <DashboardLayout role={role}>
         <p className="text-[0.9rem] text-brand-sub">
-          Asset {id} was not found.{" "}
+          {error || `Asset ${id} was not found.`}{" "}
           <Link to={`/dashboard/${role}/assets`} className="text-brand-info underline">
             Back to Assets
           </Link>
@@ -37,6 +93,12 @@ export default function AssetDetailPage({ role }) {
       >
         <ArrowLeft size={15} /> Back to Assets
       </Link>
+
+      {error && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-[0.85rem] text-red-600">
+          <AlertTriangle size={16} /> {error}
+        </div>
+      )}
 
       <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -62,7 +124,7 @@ export default function AssetDetailPage({ role }) {
               <button onClick={() => setEditOpen(true)} className="btn-outline">
                 <Pencil size={15} /> Edit
               </button>
-              <button className="btn bg-brand-crit text-white hover:bg-brand-crit/90">
+              <button onClick={() => setDeleteOpen(true)} className="btn bg-brand-crit text-white hover:bg-brand-crit/90">
                 <Trash2 size={15} /> Delete
               </button>
             </>
@@ -83,10 +145,10 @@ export default function AssetDetailPage({ role }) {
           <h3 className="text-[0.95rem] font-semibold text-brand-text">Overview</h3>
           <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-4 text-[0.85rem] sm:grid-cols-3">
             <Field label="Fitting Type" value={asset.type} />
+            <Field label="Track Number" value={asset.trackNumber || "—"} />
             <Field label="Location" value={asset.location} />
-            <Field label="QR Code" value={asset.qrCode} />
+            <Field label="QR Code" value={asset.qrCode || "Not generated yet"} />
             <Field label="Installed On" value={asset.installedOn} />
-            <Field label="Last Inspected" value={asset.lastInspected} />
             <Field label="Status" value={<StatusPill status={asset.status} />} />
           </dl>
         </div>
@@ -119,23 +181,7 @@ export default function AssetDetailPage({ role }) {
               </tr>
             </thead>
             <tbody>
-              {asset.inspectionHistory.map((row) => (
-                <tr key={row.id} className="border-b border-brand-border/60 last:border-0">
-                  <td className="py-3 font-medium text-brand-text">
-                    <Link to={`/dashboard/${role}/inspections/${row.id.replace("#", "")}`} className="hover:text-brand-info">
-                      {row.id}
-                    </Link>
-                  </td>
-                  <td className="py-3 text-brand-text/80">{row.date}</td>
-                  <td className="py-3 text-brand-text/80">{row.inspector}</td>
-                  <td className={`py-3 font-medium ${healthColor(row.health)}`}>{row.health}%</td>
-                  <td className="py-3 text-brand-text/80">{row.result}</td>
-                  <td className="py-3"><StatusPill status={row.status} /></td>
-                </tr>
-              ))}
-              {asset.inspectionHistory.length === 0 && (
-                <tr><td colSpan={6} className="py-8 text-center text-brand-sub">No inspections logged yet.</td></tr>
-              )}
+              <tr><td colSpan={6} className="py-8 text-center text-brand-sub">No inspections logged yet.</td></tr>
             </tbody>
           </table>
         </div>
@@ -156,18 +202,7 @@ export default function AssetDetailPage({ role }) {
               </tr>
             </thead>
             <tbody>
-              {asset.maintenanceHistory.map((row) => (
-                <tr key={row.id} className="border-b border-brand-border/60 last:border-0">
-                  <td className="py-3 font-medium text-brand-text">{row.id}</td>
-                  <td className="py-3 text-brand-text/80">{row.date}</td>
-                  <td className="py-3 text-brand-text/80">{row.type}</td>
-                  <td className="py-3 text-brand-text/80">{row.performedBy}</td>
-                  <td className="py-3 text-brand-text/80">{row.notes}</td>
-                </tr>
-              ))}
-              {asset.maintenanceHistory.length === 0 && (
-                <tr><td colSpan={5} className="py-8 text-center text-brand-sub">No maintenance recorded yet.</td></tr>
-              )}
+              <tr><td colSpan={5} className="py-8 text-center text-brand-sub">No maintenance recorded yet.</td></tr>
             </tbody>
           </table>
         </div>
@@ -175,8 +210,23 @@ export default function AssetDetailPage({ role }) {
 
       {role === "admin" && (
         <>
-          <AssetFormModal open={editOpen} onClose={() => setEditOpen(false)} onSave={() => setEditOpen(false)} asset={asset} />
-          <QRCodeModal open={qrOpen} onClose={() => setQrOpen(false)} asset={asset} />
+          <AssetFormModal open={editOpen} onClose={() => setEditOpen(false)} onSave={handleSaveEdit} asset={asset} saving={saving} />
+          <QRCodeModal open={qrOpen} onClose={() => { setQrOpen(false); loadAsset(); }} asset={asset} />
+          {deleteOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-brand-bg/60 backdrop-blur-[2px]" onClick={() => setDeleteOpen(false)} aria-hidden="true" />
+              <div className="relative w-full max-w-sm rounded-2xl border border-brand-border bg-brand-card p-6 shadow-2xl">
+                <h3 className="text-[1.05rem] font-semibold text-brand-text">Delete Asset {asset.id}?</h3>
+                <p className="mt-2 text-[0.85rem] text-brand-sub">
+                  This removes the asset permanently. This action can't be undone.
+                </p>
+                <div className="mt-5 flex justify-end gap-3">
+                  <button onClick={() => setDeleteOpen(false)} className="btn-outline">Cancel</button>
+                  <button onClick={handleDelete} className="btn bg-brand-crit text-white hover:bg-brand-crit/90">Delete</button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </DashboardLayout>

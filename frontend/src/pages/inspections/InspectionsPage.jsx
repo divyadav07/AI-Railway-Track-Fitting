@@ -5,14 +5,15 @@ import DashboardLayout from "../../layouts/DashboardLayout.jsx";
 import InspectionFilters from "../../components/inspections/InspectionFilters.jsx";
 import InspectionsTable from "../../components/inspections/InspectionsTable.jsx";
 import { inspections, toISODate } from "../../data/inspectionsData.js";
-
-const CURRENT_INSPECTOR = "Rahul Sharma"; // mirrors the mock user in DashboardLayout
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const statuses = ["Completed", "Under Review"];
 
 export default function InspectionsPage({ role }) {
+  const { user } = useAuth();
   const isAdmin = role === "admin";
-  const scoped = isAdmin ? inspections : inspections.filter((i) => i.inspector === CURRENT_INSPECTOR);
+  const currentInspector = user?.Name || "";
+  const scoped = isAdmin ? inspections : inspections.filter((i) => i.inspector === currentInspector);
   const inspectorNames = useMemo(() => [...new Set(inspections.map((i) => i.inspector))], []);
 
   const [query, setQuery] = useState("");

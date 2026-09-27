@@ -1,10 +1,32 @@
-import { useState, useMemo } from "react";
-import { Search, MapPin, Check } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Search, MapPin, Check, AlertTriangle } from "lucide-react";
 import StatusPill, { healthColor } from "../../dashboard/StatusPill.jsx";
-import { assets } from "../../../data/assetsData.js";
+import { getAssets } from "../../../api/assets.js";
+import { mapAssetFromApi } from "../../../utils/assetMapper.js";
 
 export default function StepAsset({ selected, onSelect }) {
   const [query, setQuery] = useState("");
+  const [assets, setAssets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await getAssets();
+        if (!cancelled) setAssets((res?.data || []).map(mapAssetFromApi));
+      } catch (err) {
+        if (!cancelled) setError(err.message || "Failed to load assets.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -12,7 +34,7 @@ export default function StepAsset({ selected, onSelect }) {
     return assets.filter(
       (a) => a.id.toLowerCase().includes(q) || a.location.toLowerCase().includes(q) || a.type.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [assets, query]);
 
   return (
     <div className="rounded-2xl border border-brand-border bg-brand-card p-5">
@@ -32,8 +54,16 @@ export default function StepAsset({ selected, onSelect }) {
         />
       </div>
 
+      {error && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg bg-red-50 px-3.5 py-2.5 text-[0.82rem] text-red-600">
+          <AlertTriangle size={15} /> {error}
+        </div>
+      )}
+
       <div className="mt-4 max-h-[420px] space-y-2.5 overflow-y-auto pr-1">
-        {filtered.map((a) => {
+        {loading && <p className="py-8 text-center text-[0.85rem] text-brand-sub">Loading assets…</p>}
+
+        {!loading && filtered.map((a) => {
           const active = selected?.id === a.id;
           return (
             <button
@@ -70,7 +100,7 @@ export default function StepAsset({ selected, onSelect }) {
           );
         })}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && !error && (
           <p className="py-8 text-center text-[0.85rem] text-brand-sub">No assets match your search.</p>
         )}
       </div>

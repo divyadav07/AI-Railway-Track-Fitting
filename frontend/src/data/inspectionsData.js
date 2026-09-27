@@ -1,153 +1,40 @@
 // ---------------------------------------------------------------------------
-// PLACEHOLDER DATA ONLY — same note as assetsData.js. Replace `inspections`
-// with a real fetch to your existing backend and keep the shape, or adjust
-// components in components/inspections/ to match your real field names.
+// IMPORTANT: the backend you connected has no `inspections` table or API
+// route at all (only `asset`, `users`, dashboard-stat and QR-code
+// endpoints exist). So unlike assets, this module cannot be wired to the
+// real database — there is nothing on the server to call.
+//
+// To keep the Inspections feature usable without inventing fake data, this
+// starts completely empty and everything submitted here lives only in this
+// browser tab's memory. It resets on refresh and is never saved to your
+// database. Once a real inspections table + API exists on the backend,
+// replace this whole module with calls into src/api/ the same way
+// src/api/assets.js was done.
 // ---------------------------------------------------------------------------
 
 const imageSlots = ["Front", "Back", "Left", "Right", "Close-up"];
 
-function placeholderImages() {
-  return imageSlots.map((label) => ({ label, uploaded: true }));
-}
-
-export const inspections = [
-  {
-    id: "#1024",
-    assetId: "004",
-    assetType: "Rail Clip",
-    location: "KM 245/7",
-    inspector: "Rahul Sharma",
-    date: "25 Sep 2026",
-    time: "10:24 AM",
-    status: "Completed",
-    healthScore: 25,
-    remarks: "Visible corrosion along the clip edge and a hairline crack near the base. Recommend urgent maintenance.",
-    images: placeholderImages(),
-    aiResult: {
-      fitting: { label: "Rail Clip", confidence: 96 },
-      rust: { detected: true, confidence: 91 },
-      crack: { detected: true, confidence: 78 },
-      missingBolt: { detected: false, confidence: 88 },
-    },
-  },
-  {
-    id: "#1023",
-    assetId: "017",
-    assetType: "Fish Plate",
-    location: "KM 246/2",
-    inspector: "Priya Singh",
-    date: "25 Sep 2026",
-    time: "09:10 AM",
-    status: "Completed",
-    healthScore: 31,
-    remarks: "One retaining bolt missing on the outer edge. Flagged for immediate bolt replacement.",
-    images: placeholderImages(),
-    aiResult: {
-      fitting: { label: "Fish Plate", confidence: 94 },
-      rust: { detected: false, confidence: 85 },
-      crack: { detected: false, confidence: 90 },
-      missingBolt: { detected: true, confidence: 93 },
-    },
-  },
-  {
-    id: "#1022",
-    assetId: "023",
-    assetType: "Rail Clip",
-    location: "KM 248/3",
-    inspector: "Amit Yadav",
-    date: "24 Sep 2026",
-    time: "04:42 PM",
-    status: "Under Review",
-    healthScore: 35,
-    remarks: "Possible missing bolt — awaiting admin confirmation on AI reading before closing.",
-    images: placeholderImages(),
-    aiResult: {
-      fitting: { label: "Rail Clip", confidence: 89 },
-      rust: { detected: true, confidence: 62 },
-      crack: { detected: false, confidence: 81 },
-      missingBolt: { detected: true, confidence: 74 },
-    },
-  },
-  {
-    id: "#1021",
-    assetId: "012",
-    assetType: "Rail Clip",
-    location: "KM 250/4",
-    inspector: "Rahul Sharma",
-    date: "24 Sep 2026",
-    time: "11:05 AM",
-    status: "Completed",
-    healthScore: 81,
-    remarks: "No visible defects. Fitting in good condition.",
-    images: placeholderImages(),
-    aiResult: {
-      fitting: { label: "Rail Clip", confidence: 97 },
-      rust: { detected: false, confidence: 95 },
-      crack: { detected: false, confidence: 96 },
-      missingBolt: { detected: false, confidence: 94 },
-    },
-  },
-  {
-    id: "#1020",
-    assetId: "015",
-    assetType: "Fish Plate",
-    location: "KM 247/2",
-    inspector: "Priya Singh",
-    date: "23 Sep 2026",
-    time: "02:30 PM",
-    status: "Completed",
-    healthScore: 69,
-    remarks: "Light rust forming near one edge. Recommend preventive treatment within 30 days.",
-    images: placeholderImages(),
-    aiResult: {
-      fitting: { label: "Fish Plate", confidence: 92 },
-      rust: { detected: true, confidence: 58 },
-      crack: { detected: false, confidence: 90 },
-      missingBolt: { detected: false, confidence: 91 },
-    },
-  },
-  {
-    id: "#1019",
-    assetId: "003",
-    assetType: "Fish Plate",
-    location: "KM 246/8",
-    inspector: "Rahul Sharma",
-    date: "24 Sep 2026",
-    time: "08:55 AM",
-    status: "Completed",
-    healthScore: 88,
-    remarks: "Minor surface rust, well within acceptable range.",
-    images: placeholderImages(),
-    aiResult: {
-      fitting: { label: "Fish Plate", confidence: 95 },
-      rust: { detected: true, confidence: 41 },
-      crack: { detected: false, confidence: 93 },
-      missingBolt: { detected: false, confidence: 92 },
-    },
-  },
-];
+export const inspections = [];
 
 export function getInspectionById(id) {
   return inspections.find((i) => i.id === id) ?? null;
 }
 
 export function getInspectionsByInspector(name) {
+  if (!name) return [];
   return inspections.filter((i) => i.inspector === name);
 }
 
-// Frontend-only "persistence" — pushes a freshly submitted inspection into
-// the in-memory list so it immediately shows up in the Inspections list and
-// its own detail page. Replace with a POST /api/inspections call (and let
-// the backend be the source of truth) once your endpoint is available.
-let nextInspectionSeq = 1025;
-export function addInspection({ asset, aiResult, remarks, inspector = "Rahul Sharma" }) {
+// In-memory only — see the module note above.
+let nextInspectionSeq = 1;
+export function addInspection({ asset, aiResult, remarks, inspector }) {
   const now = new Date();
   const record = {
     id: `#${nextInspectionSeq++}`,
     assetId: asset.id,
     assetType: asset.type,
     location: asset.location,
-    inspector,
+    inspector: inspector || "Unknown Inspector",
     date: now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
     time: now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
     status: "Completed",
@@ -168,21 +55,21 @@ const monthMap = {
 };
 
 // Converts "25 Sep 2026" -> "2026-09-25" so it can be compared against an
-// <input type="date"> value. Swap this out once real records carry ISO dates.
+// <input type="date"> value.
 export function toISODate(displayDate) {
-  const [day, mon, year] = displayDate.split(" ");
+  const [day, mon, year] = (displayDate || "").split(" ");
   if (!day || !mon || !year || !monthMap[mon]) return "";
   return `${year}-${monthMap[mon]}-${day.padStart(2, "0")}`;
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder "AI engine" call. This stands in for a real request to your
-// backend's inspection/analyze endpoint (e.g. POST /api/inspections/analyze
-// with the uploaded images) — swap the body of this function for that fetch
-// once the endpoint is available; the return shape below is what the rest of
-// the inspection UI (AIResultsPanel, review step, detail page) expects.
+// There is no AI analysis endpoint on the backend either, so this is a
+// clearly-labeled local placeholder that produces a plausible-looking
+// result so the review screen has something to display. It is NOT a real
+// defect detector. Replace with a real POST to an analysis endpoint once
+// one exists on the backend.
 // ---------------------------------------------------------------------------
-export function runMockAIAnalysis(asset) {
+export function runLocalPlaceholderAnalysis(asset) {
   const seed = (asset?.id ?? "000").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const rand = (offset, min, max) => {
     const x = Math.sin(seed + offset) * 10000;
@@ -205,4 +92,3 @@ export function runMockAIAnalysis(asset) {
     healthScore,
   };
 }
-
