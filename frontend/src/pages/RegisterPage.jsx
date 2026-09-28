@@ -1,29 +1,56 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Eye, EyeOff, Mail, Lock, User, BadgeCheck } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Mail, Lock, User, Phone, AlertCircle, CheckCircle2 } from "lucide-react";
 import Logo from "../components/Logo.jsx";
 import RoleCard from "../components/RoleCard.jsx";
 import SignalChain from "../components/SignalChain.jsx";
 import { roles } from "../data/content.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+  const { register, loading } = useAuth();
   const [role, setRole] = useState("inspector");
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    employeeId: "",
+    phone: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [formError, setFormError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Frontend only — wire this up to your auth API.
-    console.log("Register submitted:", { role, ...form });
+    setFormError("");
+
+    if (!form.name || !form.phone || !form.email || !form.password) {
+      setFormError("Please fill in all fields.");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setFormError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      await register({
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        password: form.password,
+        role,
+      });
+      setSuccess(true);
+      setTimeout(() => navigate("/login"), 1200);
+    } catch (err) {
+      setFormError(err.message || "Registration failed. Please try again.");
+    }
   };
 
   const activeRole = roles.find((r) => r.key === role);
@@ -129,17 +156,18 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="employeeId" className="field-label">Employee ID</label>
+                <label htmlFor="phone" className="field-label">Phone number</label>
                 <div className="relative">
-                  <BadgeCheck size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-900/35" />
+                  <Phone size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-900/35" />
                   <input
-                    id="employeeId"
-                    name="employeeId"
-                    type="text"
-                    value={form.employeeId}
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={form.phone}
                     onChange={handleChange}
-                    placeholder="e.g. RS-1042"
+                    placeholder="e.g. 9876543210"
                     className="field-input pl-10"
+                    autoComplete="tel"
                   />
                 </div>
               </div>
@@ -211,8 +239,22 @@ export default function RegisterPage() {
               I agree to the terms of use and confirm my details are accurate.
             </label>
 
-            <button type="submit" className="btn-primary w-full py-3.5">
-              Create {activeRole.label} account
+            {formError && (
+              <div className="flex items-start gap-2 rounded-lg bg-red-50 px-3.5 py-2.5 text-[0.82rem] text-red-600">
+                <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            {success && (
+              <div className="flex items-start gap-2 rounded-lg bg-brand-okBg px-3.5 py-2.5 text-[0.82rem] text-brand-ok">
+                <CheckCircle2 size={15} className="mt-0.5 shrink-0" />
+                <span>Account created. Redirecting to login…</span>
+              </div>
+            )}
+
+            <button type="submit" disabled={loading || success} className="btn-primary w-full py-3.5 disabled:opacity-60">
+              {loading ? "Creating account…" : `Create ${activeRole.label} account`}
             </button>
           </form>
 

@@ -8,12 +8,14 @@ import StepImages from "../../components/inspections/steps/StepImages.jsx";
 import StepAnalysis from "../../components/inspections/steps/StepAnalysis.jsx";
 import StepReview from "../../components/inspections/steps/StepReview.jsx";
 import StepSuccess from "../../components/inspections/steps/StepSuccess.jsx";
-import { imageSlotLabels, runMockAIAnalysis, addInspection } from "../../data/inspectionsData.js";
+import { imageSlotLabels, runLocalPlaceholderAnalysis, addInspection } from "../../data/inspectionsData.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const STEPS = ["Asset", "Images", "AI Analysis", "Review", "Submit"];
 
 export default function NewInspectionPage() {
   const location = useLocation();
+  const { user } = useAuth();
   const preselectedAsset = location.state?.asset ?? null;
 
   const [stepIndex, setStepIndex] = useState(0);
@@ -39,16 +41,17 @@ export default function NewInspectionPage() {
 
   const handleRunAnalysis = () => {
     setAnalysisLoading(true);
-    // Simulated latency for the "AI call" — swap runMockAIAnalysis for a real
-    // request to your inspection/analyze endpoint.
+    // No AI/analysis endpoint exists on the backend, so this is a clearly
+    // labeled local placeholder (see data/inspectionsData.js) — swap it for
+    // a real request once such an endpoint is added.
     setTimeout(() => {
-      setResult(runMockAIAnalysis(asset));
+      setResult(runLocalPlaceholderAnalysis(asset));
       setAnalysisLoading(false);
     }, 1100);
   };
 
   const handleSubmit = () => {
-    const record = addInspection({ asset, aiResult: result, remarks });
+    const record = addInspection({ asset, aiResult: result, remarks, inspector: user?.Name });
     setSubmitted(record);
     setStepIndex(4);
   };

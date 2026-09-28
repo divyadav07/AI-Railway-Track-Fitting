@@ -1,14 +1,20 @@
-import { useMemo, useState } from "react";
-import { Boxes, Plus } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Boxes, Plus, AlertTriangle } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout.jsx";
 import AssetFilters from "../../components/assets/AssetFilters.jsx";
 import AssetsTable from "../../components/assets/AssetsTable.jsx";
 import AssetFormModal from "../../components/assets/AssetFormModal.jsx";
 import QRCodeModal from "../../components/assets/QRCodeModal.jsx";
-import { assets as initialAssets, fittingTypes, assetStatuses } from "../../data/assetsData.js";
+import * as assetsApi from "../../api/assets.js";
+import { mapAssetFromApi, mapAssetToApi } from "../../utils/assetMapper.js";
+import { fittingTypes, assetStatuses } from "../../data/assetsData.js";
 
 export default function AssetsPage({ role }) {
-  const [assets, setAssets] = useState(initialAssets);
+  const [assets, setAssets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
+
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
   const [status, setStatus] = useState("all");
@@ -17,8 +23,27 @@ export default function AssetsPage({ role }) {
   const [editingAsset, setEditingAsset] = useState(null);
   const [qrAsset, setQrAsset] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const basePath = `/dashboard/${role}/assets`;
+
+  async function loadAssets() {
+    setLoading(true);
+    setLoadError("");
+    try {
+      const res = await assetsApi.getAssets();
+      setAssets((res?.data || []).map(mapAssetFromApi));
+    } catch (err) {
+      setLoadError(err.message || "Failed to load assets.");
+      setAssets([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadAssets();
+  }, []);
 
   const filtered = useMemo(() => {
     return assets.filter((a) => {
@@ -33,40 +58,46 @@ export default function AssetsPage({ role }) {
 
   const handleAdd = () => {
     setEditingAsset(null);
+    setActionError("");
     setFormOpen(true);
   };
 
   const handleEdit = (asset) => {
     setEditingAsset(asset);
+    setActionError("");
     setFormOpen(true);
   };
 
-  const handleSave = (form) => {
-    // Frontend only — replace with POST /assets or PATCH /assets/:id on your API.
-    setAssets((prev) => {
-      const exists = prev.some((a) => a.id === form.id);
-      if (exists) {
-        return prev.map((a) => (a.id === form.id ? { ...a, ...form } : a));
+  const handleSave = async (form) => {
+    setSaving(true);
+    setActionError("");
+    try {
+      const payload = mapAssetToApi(form);
+      if (editingAsset) {
+        await assetsApi.updateAsset(editingAsset.id, payload);
+      } else {
+        await assetsApi.createAsset(payload);
       }
-      return [
-        {
-          ...form,
-          qrCode: `QR-${form.type.slice(0, 2).toUpperCase()}-${form.id}`,
-          installedOn: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-          lastInspected: "—",
-          inspectionHistory: [],
-          maintenanceHistory: [],
-        },
-        ...prev,
-      ];
-    });
-    setFormOpen(false);
+      setFormOpen(false);
+      await loadAssets();
+    } catch (err) {
+      setActionError(err.message || "Failed to save asset.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDeleteConfirm = () => {
-    // Frontend only — replace with DELETE /assets/:id on your API.
-    setAssets((prev) => prev.filter((a) => a.id !== deleteTarget.id));
-    setDeleteTarget(null);
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setActionError("");
+    try {
+      await assetsApi.deleteAsset(deleteTarget.id);
+      setDeleteTarget(null);
+      await loadAssets();
+    } catch (err) {
+      setActionError(err.message || "Failed to delete asset.");
+      setDeleteTarget(null);
+    }
   };
 
   return (
@@ -94,6 +125,13 @@ export default function AssetsPage({ role }) {
         )}
       </div>
 
+      {(loadError || actionError) && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-[0.85rem] text-red-600">
+          <AlertTriangle size={16} />
+          {loadError || actionError}
+        </div>
+      )}
+
       <div className="mt-6">
         <AssetFilters
           query={query}
@@ -116,6 +154,7 @@ export default function AssetsPage({ role }) {
           onDelete={setDeleteTarget}
           onShowQR={setQrAsset}
         />
+        {loading && <p className="mt-3 text-center text-[0.8rem] text-brand-sub">Loading assets…</p>}
       </div>
 
       {role === "admin" && (
@@ -125,6 +164,7 @@ export default function AssetsPage({ role }) {
             onClose={() => setFormOpen(false)}
             onSave={handleSave}
             asset={editingAsset}
+            saving={saving}
           />
           <QRCodeModal open={Boolean(qrAsset)} onClose={() => setQrAsset(null)} asset={qrAsset} />
           <DeleteConfirmModal

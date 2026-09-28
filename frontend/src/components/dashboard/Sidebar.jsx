@@ -1,4 +1,4 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Boxes,
@@ -12,23 +12,24 @@ import {
   TrainFront,
   ClipboardList,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const adminNav = [
   { to: "/dashboard/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/dashboard/admin/assets", label: "Assets", icon: Boxes },
   { to: "/dashboard/admin/inspections", label: "Inspections", icon: Camera },
-  { to: "/dashboard/maintenance", label: "Maintenance", icon: Wrench },
-  { to: "/dashboard/alerts", label: "Alerts", icon: Bell, badge: 3 },
-  { to: "/dashboard/users", label: "Users", icon: Users },
-  { to: "/dashboard/reports", label: "Reports", icon: FileBarChart },
-  { to: "/dashboard/settings", label: "Settings", icon: Settings },
+  { to: "/dashboard/admin/maintenance", label: "Maintenance", icon: Wrench },
+  { to: "/dashboard/admin/alerts", label: "Alerts", icon: Bell },
+  { to: "/dashboard/admin/users", label: "Users", icon: Users },
+  { to: "/dashboard/admin/reports", label: "Reports", icon: FileBarChart },
+  { to: "/dashboard/admin/settings", label: "Settings", icon: Settings },
 ];
 
 const inspectorNav = [
   { to: "/dashboard/inspector", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/dashboard/inspector/assets", label: "Assets", icon: Boxes },
   { to: "/dashboard/inspector/inspections", label: "Inspections", icon: ClipboardList },
-  { to: "/dashboard/inspector/alerts", label: "Alerts", icon: Bell, badge: 2 },
+  { to: "/dashboard/inspector/alerts", label: "Alerts", icon: Bell },
   { to: "/dashboard/inspector/settings", label: "Settings", icon: Settings },
 ];
 
@@ -36,6 +37,13 @@ const subtitle = { admin: "Track Fitting Inspection", inspector: "Inspector Cons
 
 export default function Sidebar({ open = false, onClose = () => {}, role = "admin" }) {
   const navItems = role === "inspector" ? inspectorNav : adminNav;
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <>
@@ -104,7 +112,11 @@ export default function Sidebar({ open = false, onClose = () => {}, role = "admi
 
       {/* Logout */}
       <div className="border-t border-white/[0.08] px-3 py-4">
-        <button className="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-[0.87rem] text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white/90">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-[0.87rem] text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white/90"
+        >
           <LogOut size={17} strokeWidth={1.9} />
           Logout
         </button>
